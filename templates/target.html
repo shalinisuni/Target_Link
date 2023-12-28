@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <section id="nav-bar">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename='Images/demo-logo.png')}}" alt="logo"></a>
+              <div class="dropdown m-3">
+                <button class="btn  dropdown-toggle"  data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="text-light m-2">{{uname}}</span>
+                    <i class="fa fa-user-o" style="font-size:24px;color:white"></i>
+                 
+                </button>
+                <ul class="dropdown-menu">
+                  
+                  <li><a class="dropdown-item" href="#">{{email}}</a></li>
+                  <li><a class="dropdown-item" href="#">Setting</a></li>
+                  <li><a class="dropdown-item" href="{{url_for('logout')}}">Logout</a></li>
+                  
+                </ul>
+              </div>  
+            </div>
+            </div>  
+          </nav>    
+    </section>
+    <section id="banner">
+ 
+           <div class="row m-2">
+            <div class="col-md-6 rounded p-2 ">
+              <h2 class="text-center mt-4">User Form</h2>
+              <form action="/submit" method="Post" >
+                <div class="row bg-light rounded p-2 text-dark g-2">
+                <label class="col-sm-3 mt-3" for="targetDropdown">Target Name</label>
+                <div class="col-sm-9 mt-3">
+                    <select id="targetDropdown" name="targetDropdown" class="form-control ">
+                        <option selected>select the value</option>
+                        {% for target_name in target_names %}
+                            <option value="{{ target_name }}" class="sd">{{ target_name }}</option>
+                        {% endfor %}
+                    </select>
+                  
+                </div>
+                <label class="col-sm-3 mt-3" for="totalTargetCount">Total Target count</label>
+                <div class="col-sm-9 mt-3">
+                    <input type="text" id="totalTargetCount" name="totalTargetCount" readonly class="form-control" disabled>
+                </div>
+                <label class="col-sm-3 mt-3" for="cumulativeTarget">Cumulative Target</label>
+                <div class="col-sm-7 mt-3">
+                    <input type="text" id="cumulativeTarget" name="cumulativeTarget" readonly class="form-control" disabled>
+                </div>
+                <div class="col-sm-2 mt-3 g-1">
+                    <div class="col-auto"><a href="/history" class="btn btn-danger" >History</a></div>
+                </div>
+                <label class="col-sm-3 mt-3" for="todayCount">Today Count</label>
+                <div class="col-sm-9 mt-3">
+                    <input type="text" class="form-control" name="todayCount" id="todayCount" required >
+                </div>
+                <div class="text-center justify-content-between ">
+                    <button class="btn btn-success m-3" type="submit">Submit</button>
+                    <a href="{{ url_for('target_page') }}" class="btn btn-warning m-3">Cancel</a>
+                </div>
+    
+            </div>
+        </form>
+        {{msg}}
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Fetch target details on dropdown change
+            $('#targetDropdown').change(function () {
+                var selectedTarget = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({ 'target_name': selectedTarget }),
+                    url: '/get_target_details',
+                    success: function (data) {
+                        $('#totalTargetCount').val(data.total_target_count);
+                        $('#cumulativeTarget').val(data.cumulative_target);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+        setTimeout(function () {
+            alert(" your Session will expire, if you continue to be inactivate for 20 seconds");
+            window.location.href = "/target";
+        }, t);
+    </script>
+            </div><!--col-md-6-->
+            <div class="col-md-6">
+                <img src="{{url_for('static', filename='Images/home2.png')}}" alt="img1" class="img-fluid">
+            </div>
+           </div><!--row-->
+       
+    
+    </section>
+</div><!--container-fluid-->
+{% endblock %}
